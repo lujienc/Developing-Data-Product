@@ -1,0 +1,72 @@
+Shiny App on Freedom House Country Ratings
+========================================================
+author: lujienc
+date: Jan. 18th, 2016
+
+Background Information
+========================================================
+- This Shiny App generates Freeom House Ratings for user-specified country's political rights, civil liberty, and overall status of freedom in any given year between 1990 and 2014 
+- All information is based on Freedom House's annual ratings using expert surveys
+- Detailed information regarding the methodology of Freedom House's ratings can be found here (https://freedomhouse.org/report/freedom-world-2015/methodology)
+- This Shiny App can be accessed here(https://lujienc.shinyapps.io/Projects/)
+
+User Instructions
+========================================================
+```{r, echo=FALSE}
+library(tidyr)
+
+## Reading data
+fhall <- read.csv("FH_ALL_19902014.csv", na.strings=c("..",""), skip=2)
+names(fhall)[1] <- "CT"
+
+## Reshaping data
+fhall_PR <- fhall[, c("CT", grep("PR", names(fhall), value=TRUE))] 
+fhall_CL <- fhall[, c("CT", grep("CL", names(fhall), value=TRUE))]
+fhall_ST <- fhall[, c("CT", grep("Status", names(fhall), value=TRUE))]
+
+fhall_PRL <- gather(fhall_PR, yrs, prights, PR:PR.24)
+fhall_CLL <- gather(fhall_CL, yrs, cliberty, CL:CL.24)
+fhall_STL <- gather(fhall_ST, yrs, status, Status:Status.24)
+
+levels(fhall_PRL$yrs) <- c(1990:2014)
+levels(fhall_CLL$yrs) <- c(1990:2014)
+levels(fhall_STL$yrs) <- c(1990:2014)
+
+fhall_temp <- merge(fhall_PRL, fhall_CLL, by=c("CT", "yrs"))
+fhall_final <- merge(fhall_temp, fhall_STL, by=c("CT", "yrs"))
+names(fhall_final) <-c("Country", "Years", "Rights", "Liberty", "Status")
+fhall_final$Years <- 1989 + as.numeric(fhall_final$Years)
+fhall_final$Country <- as.character(fhall_final$Country)
+
+tyrs <- length(unique(fhall_final$Years))
+tcts <- length(unique(fhall_final$Country))
+```
+- Using dropdown menus, users select the country and year they are interested in
+- After clicking the "Submit" botton, users can see related Freedom House ratings
+
+Altogether, this Shiny App covers `r tyrs` years and `r tcts` societies in the world between 1990 and 2014.
+- Both political rights and civil liberty are assessed using a 7-point scale, with a smaller value standing for a better situation
+- Overall status of freemdom is assessed using a 3-point scale: Free (F), Partly Free (PF), and Not Free (NF)
+
+Illustrations
+========================================================
+For instance, if users want to see how Mexico looked in 1990. Users simply use dropdown menus to select "Mexico" and "1990"; and click "Submit". Following results will be displayed:
+```{r, echo=FALSE}
+temp <- fhall_final[(fhall_final$Country=="Mexico")&(fhall_final$Years==1990),]
+trights <- temp[, 3]
+tliberty <- temp[, 4]
+tstatus <- temp[, 5]
+```
+- You have selected: Mexico
+- You have choosen year: 1990
+- FH rating for its political rights is: `r trights`
+- FH rating for its civil liberty is: `r tliberty`
+- FH rating for its overall freedom status is: `r tstatus`
+
+Basically, Mexico in 1990 was a Partly Free (PF) society. Its Freedom House ratings for political rights and civil liberty in 1990 were `r trights` and `r tliberty` respectively.
+
+Conclusion
+========================================================
+- Using this Shiny App, users can easily get the Freedom House ratings of the country they are interested in for a given year
+- Users do not need to download data files form the Freedom House website and to manually search for related information
+- Further development of this Shiny App will add plotting fucntions, including time-series figures for any user-specified country

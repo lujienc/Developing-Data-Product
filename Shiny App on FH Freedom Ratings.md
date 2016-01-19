@@ -8,7 +8,8 @@ Background Information
 - This Shiny App generates Freeom House Ratings for user-specified country's political rights, civil liberty, and overall status of freedom in any given year between 1990 and 2014 
 - All information is based on Freedom House's annual ratings using expert surveys
 - Detailed information regarding the methodology of Freedom House's ratings can be found here (https://freedomhouse.org/report/freedom-world-2015/methodology)
-- This Shiny App can be accessed here(https://lujienc.shinyapps.io/Projects/)
+- This Shiny App can be accessed here (https://lujienc.shinyapps.io/Projects/)
+- Related R codes and data can be accessed here (https://github.com/lujienc/Developing-Data-Product)
 
 User Instructions
 ========================================================
